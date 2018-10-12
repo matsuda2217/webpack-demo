@@ -1,7 +1,12 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require("webpack-merge");
 const parts = require('./webpack.part');
+const glob = require("glob");
+const path = require('path');
 
+const PATHS = {
+  app: path.join(__dirname, "src"),
+}
 const commonConfig = merge([
   {
     plugins: [
@@ -9,17 +14,31 @@ const commonConfig = merge([
         title: "Webpack demo"
       }),
     ],
-    
   },
-  parts.loadCSS(),
+  parts.loadJavaScript({ include: PATHS.app }),
 ]);
-const productionConfig = merge([])
+
+const productionConfig = merge([
+  parts.extractCSS({use: ["css-loader", parts.autoprefix()],
+  }),
+  parts.purifyCSS({
+    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
+  }),
+  parts.loadImages({
+    options: {
+      limit: 100000,
+      name: "[name].[ext]",
+    },
+  }),
+]);
 
 const developmentConfig = merge([
   parts.devServer({
     host: process.env.HOST,
     port: process.env.PORT
   }),
+  parts.loadCSS(),
+  parts.loadImages(),
 ]);
 
 module.exports = mode => {

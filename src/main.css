@@ -1,3 +1,10 @@
 body {
   background: cornflowerblue;
+  background-image: url("log.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.pure-button {
+  -webkit-border-radius: 0.5em;
+  border-radius: 1em;
 }
